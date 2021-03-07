@@ -1,0 +1,88 @@
+---
+title: "PCA"
+author: "Suriya Prakaash S.K.T"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+  html_notebook:
+    toc: yes
+    toc_float: yes
+---
+## Table of Contents
+### Part 2.1-a
+```{r}
+library(NbClust)
+library(ggplot2)
+library(cluster)
+library(factoextra)
+library(dplyr)
+set.seed(1122)
+rm(list=ls())
+
+# Set working directory as needed
+setwd("C:/Users/ssund/Documents/R-Studio Directory")
+
+```
+
+### Setting Directory
+```{r}
+pca_df <- read.csv("countries.csv", header = TRUE, row.names = 1)
+summary(pca_df)
+```
+
+### Boxplotting to find about outliers
+```{r}
+boxplot(pca_df$GDP, main = "BoxPlot", ylab = "GDP")
+boxplot(pca_df$HIV, main = "BoxPlot", ylab = "HIV")
+boxplot(pca_df$Lifeexp, main = "BoxPlot", ylab = "Lifeexp")
+boxplot(pca_df$Mil, main = "BoxPlot", ylab = "Mil")
+boxplot(pca_df$Oilcons, main = "BoxPlot", ylab = "Oilcons")
+boxplot(pca_df$Pop, main = "BoxPlot", ylab = "Pop")
+boxplot(pca_df$Tel, main = "BoxPlot", ylab = "Tel")
+boxplot(pca_df$Unempl, main = "BoxPlot", ylab = "Unempl")
+
+### Outliers in pop boxplot represent the population of India and China which is pretty high than population of other countries.
+```
+
+### Implementing PCA model
+```{r}
+pca <- prcomp(scale(pca_df))
+pca
+```
+
+### Summary of the above model
+```{r}
+summary(pca)
+
+### 4 components are explaining 90% of the variance
+```
+
+### Screeplotting PCA model
+```{r}
+screeplot(pca, type = 'l', main = "Proportion of variance")
+
+### I will take 4 principal components for modeling on the basis of screeplot.
+```
+
+### Inferring from PCA model output
+```{r}
+pca$rotation
+
+
+### In PC1, GDP, Lifeexp, Oilcons, Tel are positive and HIV, Mil, Pop, and Unempl are negatively correlated. Positive values suggests that PC1 is helpful in explaining the countries having high GDP, LifeExp,OilCons, and Tel
+
+
+### Similarly PC2 has high positive values for Pop, and Mil
+#low positive values for GDP, Lifeexp, Oilcons, and Tel: negative values for HIV and Unempl. High positive values for Pop and Mil suggests that PC2 is helpful in identifying the countries having high Pop and Mil.
+```
+
+### Biplotting for 1st and 2nd components to infer more
+```{r}
+biplot(pca, scale = 0)
+
+pca$x[c('Brazil', 'UK', 'Japan'),1:2]
+
+#I notice that PC1 and PC2 makes sense for Brazil, UK and Japan as we can say that Brazil has very less GDP indicating negative correlation with PC1 and we can tell unemployment is highest in Brazil, fairly hogh in Japan and less in UK. This is eventent in PC2 with Brazil and Japan having negative value and UK have a posutive value.
+```
